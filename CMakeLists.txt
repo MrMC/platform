@@ -7,7 +7,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
 find_package(Threads REQUIRED)
 include(UseMultiArch.cmake)
-include(CheckAtomic.cmake)
 
 set(platform_NAME platform)
 set(platform_DESCRIPTION "Platform support library")
@@ -44,50 +43,38 @@ set_target_properties(platform PROPERTIES VERSION ${platform_VERSION_MAJOR}.${pl
 
 install(TARGETS platform DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(FILES src/os.h DESTINATION include/platform)
-IF(WIN32)
-  INSTALL(FILES src/windows/dlfcn-win32.h
-                src/windows/os-socket.h
-                src/windows/os-threads.h
-                src/windows/os-types.h
-          DESTINATION include/platform/windows)
-ELSE(WIN32)
-  install(FILES src/posix/os-socket.h
-                src/posix/os-threads.h
-                src/posix/os-types.h
-          DESTINATION include/platform/posix)
-ENDIF(WIN32)
+install(FILES src/posix/os-socket.h
+              src/posix/os-threads.h
+              src/posix/os-types.h
+        DESTINATION include/platform/posix)
 install(FILES src/sockets/cdevsocket.h
               src/sockets/socket.h
               src/sockets/tcp.h
         DESTINATION include/platform/sockets)
-install(FILES src/threads/atomics.h
-              src/threads/mutex.h
+install(FILES src/threads/mutex.h
               src/threads/threads.h
         DESTINATION include/platform/threads)
-install(FILES src/util/atomic.h
-              src/util/buffer.h
+install(FILES src/util/buffer.h
               src/util/StringUtils.h
               src/util/StdString.h
               src/util/timeutils.h
               src/util/util.h
         DESTINATION include/platform/util)
 
-IF(NOT WIN32)
-  # Pkgconfig
-  include(PkgConfigHandler.cmake)
-  configure_pc_file(platform platform.pc.in
-                                 platform.pc
-                                 ${CMAKE_INSTALL_PREFIX}
-                                 ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
-                                 ${CMAKE_INSTALL_PREFIX}/include)
+# Pkgconfig
+include(PkgConfigHandler.cmake)
+configure_pc_file(platform platform.pc.in
+              platform.pc
+              ${CMAKE_INSTALL_PREFIX}
+              ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}
+              ${CMAKE_INSTALL_PREFIX}/include)
 
-  install(FILES ${CMAKE_BINARY_DIR}/platform.pc
-          DESTINATION ${CMAKE_INSTALL_LIBDIR_NOARCH}/pkgconfig)
-ENDIF(NOT WIN32)
+install(FILES ${CMAKE_BINARY_DIR}/platform.pc
+        DESTINATION ${CMAKE_INSTALL_LIBDIR_NOARCH}/pkgconfig)
 
 # config mode
-configure_file (platform-config.cmake.in
-                platform-config.cmake @ONLY)
+configure_file(platform-config.cmake.in
+              platform-config.cmake @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/platform-config.cmake
         DESTINATION ${CMAKE_INSTALL_LIBDIR_NOARCH}/platform)
 

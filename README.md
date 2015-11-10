@@ -1,3 +1,3 @@
 # platform
-Platform support library used by libCEC and binary add-ons for Kodi
+Platform support library used by binary add-ons for MrMC
 
